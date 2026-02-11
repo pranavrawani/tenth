@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>A Message For You 🌊</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Cinzel:wght@500&display=swap" rel="stylesheet">
     
@@ -14,6 +14,7 @@
             height: 100%;
             overflow: hidden;
             background: linear-gradient(to bottom, #ff9a9e 0%, #fad0c4 40%, #a18cd1 100%); /* Sunset Sky */
+            font-family: 'Cinzel', serif;
         }
 
         /* --- THE OCEAN --- */
@@ -21,7 +22,7 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 40%;
+            height: 40%; /* Adjustable height */
             z-index: 1;
         }
 
@@ -68,28 +69,33 @@
             100% { margin-left: -1600px; }
         }
 
-        /* --- THE BOTTLE --- */
+        /* --- THE BOTTLE (Responsive Sizes) --- */
         .bottle-container {
             position: absolute;
-            bottom: 15%; /* Sitting in the water */
+            bottom: 15%; /* Default for mobile */
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
-            height: 100px;
-            z-index: 4; /* Sandwiched between waves */
+            width: 100px;  /* Mobile width */
+            height: 100px; /* Mobile height */
+            z-index: 4;
             cursor: pointer;
             animation: float 4s ease-in-out infinite;
             transition: transform 0.3s;
+            -webkit-tap-highlight-color: transparent; /* Removes blue tap box on Android */
         }
 
-        .bottle-container:hover {
-            transform: translateX(-50%) scale(1.1);
+        /* Hover effect only for devices with a mouse (prevents stickiness on touch) */
+        @media (hover: hover) {
+            .bottle-container:hover {
+                transform: translateX(-50%) scale(1.1);
+            }
         }
 
         .bottle-svg {
             width: 100%;
             height: 100%;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+            overflow: visible; /* Ensures cork doesn't get clipped */
         }
 
         @keyframes float {
@@ -107,10 +113,13 @@
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(5px);
+            padding: 20px; /* Safety padding for small screens */
+            box-sizing: border-box;
         }
 
         .scroll-paper {
-            width: 300px;
+            width: 90%; /* Mobile first: take up most width */
+            max-width: 400px; /* Desktop/Tablet limit */
             height: 0; /* Start closed */
             background: #f4e4bc; /* Parchment color */
             border-top: 10px solid #d4a373; /* Wood rod top */
@@ -120,52 +129,68 @@
             overflow: hidden;
             transition: height 1.5s ease-in-out;
             position: relative;
-            max-height: 80vh;
+            max-height: 80vh; /* Never taller than screen */
         }
 
         .scroll-content {
-            padding: 40px 30px;
+            padding: 30px 20px;
             text-align: center;
             opacity: 0;
             transition: opacity 1s 1s; /* Fade in after unroll */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .scroll-content h2 {
             font-family: 'Cinzel', serif;
             color: #5d4037;
             margin-top: 0;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             border-bottom: 2px solid #5d4037;
             display: inline-block;
             padding-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .scroll-content p {
             font-family: 'Dancing Script', cursive;
-            font-size: 1.4rem;
+            font-size: 1.3rem; /* Readable mobile size */
             color: #3e2723;
-            line-height: 1.6;
+            line-height: 1.5;
+            margin: 0 0 20px 0;
         }
 
         .close-btn {
-            margin-top: 20px;
             background: none;
             border: 1px solid #5d4037;
             color: #5d4037;
-            padding: 5px 15px;
+            padding: 8px 20px;
             cursor: pointer;
             font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        
+        .close-btn:hover {
+            background: #5d4037;
+            color: #f4e4bc;
         }
 
-        /* Hint Text */
+        /* --- HINT TEXT --- */
         .hint {
             position: absolute;
-            top: 20%;
+            top: 15%;
             width: 100%;
             text-align: center;
             color: white;
             font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
+            font-size: 1rem;
+            padding: 0 20px;
+            box-sizing: border-box;
             text-shadow: 0 2px 5px rgba(0,0,0,0.2);
             animation: fadePulse 3s infinite;
         }
@@ -175,6 +200,38 @@
             50% { opacity: 1; }
         }
 
+        /* --- MEDIA QUERIES (TABLET & PC) --- */
+        @media (min-width: 768px) {
+            /* Adjust Bottle for Tablet/PC */
+            .bottle-container {
+                width: 140px;
+                height: 140px;
+                bottom: 15%;
+            }
+
+            /* Adjust Hint Text */
+            .hint {
+                font-size: 1.5rem;
+                top: 20%;
+            }
+
+            /* Adjust Scroll Content */
+            .scroll-paper {
+                max-width: 450px; /* Wider on desktop */
+            }
+
+            .scroll-content h2 {
+                font-size: 1.8rem;
+            }
+
+            .scroll-content p {
+                font-size: 1.6rem;
+            }
+            
+            .close-btn {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -223,18 +280,20 @@
             const paper = document.getElementById('paper');
             const sound = document.getElementById('pop-sound');
             
-            // Play Pop Sound
+            // Try to play sound (browsers might block it without user interaction context)
             sound.volume = 0.5;
-            sound.play();
+            sound.play().catch(e => console.log("Audio play failed, user interaction needed first."));
 
             // Show Overlay
             overlay.style.display = 'flex';
             
             // Animate Scroll Unrolling
-            // We use setTimeout to allow the display:flex to render first
+            // Dynamic height based on screen size
+            const unrolledHeight = window.innerWidth < 768 ? '400px' : '500px';
+
             setTimeout(() => {
-                paper.style.height = '500px'; // Unroll
-                document.querySelector('.scroll-content').style.opacity = '1'; // Fade text in
+                paper.style.height = unrolledHeight; 
+                document.querySelector('.scroll-content').style.opacity = '1'; 
             }, 100);
         }
 
@@ -247,7 +306,7 @@
             
             setTimeout(() => {
                 overlay.style.display = 'none';
-            }, 1000); // Wait for close animation
+            }, 1000); 
         }
     </script>
 </body>
